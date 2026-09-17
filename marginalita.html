@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPA Dental — Calcola la Marginalità delle Tue Prestazioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blu: #0D2839;
+    --oro: #CFAA5C;
+    --testo: #344054;
+    --testo-sec: #667085;
+    --bordo: #E4E7EC;
+    --bg: #FFFFFF;
+    --bg-sub: #F8F9FA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--testo);
+    font-family: 'Lato', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 64px; }
+  header { text-align: center; margin-bottom: 32px; }
+  .eyebrow {
+    font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    font-size: 12px; color: var(--oro); margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif; font-weight: 700; color: var(--blu);
+    font-size: 28px; margin: 0 0 10px; line-height: 1.25;
+  }
+  .sub { color: var(--testo-sec); font-size: 15px; line-height: 1.55; max-width: 480px; margin: 0 auto; }
+  .card { border: 1px solid var(--bordo); border-radius: 12px; padding: 28px; background: var(--bg); }
+  label {
+    display: block; font-weight: 700; font-size: 13px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--blu); margin-bottom: 8px;
+  }
+  .field { margin-bottom: 20px; }
+  .row2 { display: flex; gap: 16px; }
+  .row2 .field { flex: 1; }
+  select, textarea, input[type=number] {
+    width: 100%; font-family: 'Lato', sans-serif; font-size: 15px; color: var(--testo);
+    background: var(--bg); border: 1px solid var(--bordo); border-radius: 8px; padding: 11px 14px;
+  }
+  select:focus, textarea:focus, input:focus { outline: none; border-color: var(--oro); }
+  textarea { resize: vertical; min-height: 64px; }
+  .hint { font-size: 12.5px; color: var(--testo-sec); margin-top: 6px; }
+  .alert {
+    font-size: 13px; color: #8A5A00; background: #FFF6E5; border: 1px solid #F0D28C;
+    border-radius: 8px; padding: 10px 12px; margin-top: 8px; line-height: 1.45;
+  }
+  button.primary {
+    width: 100%; background: var(--blu); color: #FFFFFF; border: none; border-radius: 8px;
+    padding: 14px 18px; font-weight: 700; font-size: 15px; letter-spacing: 0.02em; cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  button.primary:hover { opacity: 0.92; }
+  button.primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status { text-align: center; color: var(--testo-sec); font-size: 14px; margin-top: 16px; min-height: 20px; }
+  .result { margin-top: 24px; border-top: 1px solid var(--bordo); padding-top: 24px; display: none; }
+  .result.show { display: block; }
+
+  .metrics { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .metric-box {
+    flex: 1; min-width: 140px; background: var(--bg-sub); border: 1px solid var(--bordo);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .metric-box.highlight { border-color: var(--oro); }
+  .metric-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--testo-sec); font-weight: 700; margin-bottom: 6px;
+  }
+  .metric-value { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 24px; color: var(--blu); }
+  .metric-sub { font-size: 12px; color: var(--testo-sec); margin-top: 4px; }
+
+  .breakdown h3 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blu); margin: 0 0 10px;
+  }
+  .breakdown ul { margin: 0 0 18px; padding-left: 18px; font-size: 14px; line-height: 1.6; }
+  .breakdown li { margin-bottom: 4px; }
+
+  .disclaimer {
+    font-size: 12.5px; color: var(--testo-sec); background: var(--bg-sub);
+    border-radius: 8px; padding: 12px 14px; line-height: 1.5; margin-bottom: 18px;
+  }
+  .disclaimer.warn { background: #FDECC8; border: 1px solid #E8B93D; color: #7A5200; font-size: 14px; font-weight: 700; }
+
+  .cta-box {
+    text-align: center; background: var(--blu); border-radius: 10px; padding: 24px;
+  }
+  .cta-box p { color: #FFFFFF; font-size: 14.5px; margin: 0 0 14px; line-height: 1.5; }
+  .cta-btn {
+    display: inline-block; background: var(--oro); color: var(--blu); font-weight: 700;
+    text-decoration: none; padding: 12px 26px; border-radius: 8px; font-size: 14.5px;
+  }
+
+  .error-box {
+    background: #FDECEC; border: 1px solid #E9A0A0; color: #7A1F1F;
+    border-radius: 8px; padding: 12px 14px; font-size: 14px; margin-top: 16px;
+  }
+  footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--testo-sec); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">EPA Dental</div>
+    <h1>Calcola la Marginalità delle Tue Prestazioni</h1>
+    <p class="sub">Seleziona la prestazione, inserisci il tuo onorario e scopri in pochi secondi quanto margina davvero, al netto dei costi materiali stimati.</p>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label for="prestazione">Prestazione</label>
+      <select id="prestazione"></select>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="durata">Durata stimata (min)</label>
+        <input type="number" id="durata" min="1" step="1">
+      </div>
+      <div class="field">
+        <label for="costoOrario">Costo orario (€/min)</label>
+        <input type="number" id="costoOrario" min="0" step="0.01" placeholder="Es. 0.85">
+      </div>
+    </div>
+    <div class="hint" id="costoOrarioHint">Non conosci il tuo costo al minuto? Puoi comunque procedere, ma il margine risultante sarà molto approssimativo — per un dato preciso richiedi una consulenza.</div>
+
+    <div class="field">
+      <label for="onorario">Onorario applicato per questa prestazione (€)</label>
+      <input type="number" id="onorario" min="0" step="1" placeholder="Es. 350">
+    </div>
+
+    <div class="field">
+      <label for="note">Note aggiuntive <span style="text-transform:none;font-weight:400;color:var(--testo-sec);">(opzionale)</span></label>
+      <textarea id="note" placeholder="Es. materiale premium vs standard, marca specifica, arcata completa, numero elementi..."></textarea>
+    </div>
+
+    <button class="primary" id="calcBtn">Calcola marginalità</button>
+    <div class="status" id="status"></div>
+
+    <div class="result" id="result">
+      <div class="disclaimer" id="disclaimerText"></div>
+
+      <div class="metrics" id="metrics"></div>
+
+      <div class="breakdown">
+        <h3>Materiali principali coinvolti</h3>
+        <ul id="materialsList"></ul>
+      </div>
+
+      <div class="cta-box">
+        <p>Vuoi un calcolo preciso sui tuoi costi reali, non su una stima? Con lo Strategic Check-Up EPA Dental analizziamo la marginalità reale del tuo studio, prestazione per prestazione.</p>
+        <a class="cta-btn" href="mailto:info@epadental.it">Prenota il tuo Strategic Check-Up</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>EPA Dental — Evoluzione Professionale Applicata</footer>
+</div>
+
+<script>
+const PROCEDURE_DURATE = {"COMPOSITO PREPROTESICO (CP)": 60, "INTARSIO": 120, "OTT 2° CLASSE": 60, "OTT.DENTE DECIDUO": 45, "OTT.ESTETICA GRUPPO FRONTALE E RIATTACCO": 90, "OTT. M.O.D.": 75, "OTT.1°- V° CLASSE": 45, "SBIANCAMENTO DENTE SINGOLO INTERNO": 75, "SIGILLATURA SOLCHI A DENTE": 30, "SPLINTAGGIO A DENTE": 45, "SPLINTAGGIO DENTI": 60, "ENDODONZIA BIRADICOLARE": 90, "ENDODONZIA DENTE DECIDUO": 75, "ENDODONZIA MONORADICOLATO": 75, "ENDODONZIA PLURIRADICOLATO": 135, "ALLUNGAMENTO CORONA (AC)": 90, "CARTELLA PARODONTALE": 45, "CARTELLA PARODONTALE FOLLOW UP": 45, "GENGIVECTOMIA A DENTE": 45, "INNESTO EPITELIO/CONNETTIVO MULTIPLO": 90, "INNESTO EPITELIO/CONNETTIVO SINGOLO": 90, "LEMBO ACCESSO": 120, "LEMBO SPOSTATO MULTIPLO": 15, "LEMBO SPOSTATO SINGOLO": 15, "LEVIGATURA DENTE SINGOLO": 15, "OR SU IMPIANTI": 90, "OSTEO-RESETTIVA (OR)": 90, "RICOSTRUZIONE OSSEA GUIDATA": 90, "RIGENERAZIONE TISSUTALE GUIDATA": 90, "SCALING E ROOT-PLANNING (SC-RP) QUADRANTE": 60, "SONDAGGIO PARODONTALE": 15, "TERAPIA PARODONTALE": 180, "TERAPIA PARODONTALE STRUMENTALE": 240, "TRATTAMENTO FIXTURES": 30, "APICECTOMIA": 60, "BIOPSIE": 15, "CHIRURGIA ORALE": 60, "ESTRAZIONE (EX)": 30, "ESTRAZIONE 8°SUP/INF o COMPLICATA": 30, "ESTRAZIONE CH.COMPLESSA": 60, "ESTRAZIONE CHIRURGICA (EX CH)": 90, "ESTRAZIONE DENTE DECIDUO": 30, "ESTRAZIONE IMPIANTO": 30, "ESTRAZIONE RICOSTRUZ.ALVEOLARE": 120, "GRANDE RIALZO SENO MASCELLARE": 90, "RICOSTRUZIONE OSSEA SESTANTE": 60, "RICOSTRUZIONE OSSEA SITO SINGOLO": 60, "SCOPERTURA DENTE INCLUSO": 60, "1° E 2° PROVVISORIO": 90, "ALL-ON-IMPLANT IN COMPOSITO SENZA PROVVISORIO": 255, "ALL-ON-IMPLANT PROVVISORIO": 165, "ALL-ON-IMPLANT ZIRCONIO": 420, "CEMENTAZIONE CORONA": 30, "CORONA A GIACCA/ONLAY": 120, "CORONA ESTETICA DENTE": 120, "CORONA ESTETICA IMPIANTO": 120, "CORONA MONOLITICA DENTE": 45, "CORONA MONOLITICA IMPIANTO": 135, "FACCETTA IN CERAMICA": 165, "FACCETTA IN RESINA": 180, "MARYLAND BRIDGE": 120, "MARYLAND BRIDGE PROVVISORIO": 120, "MOCK UP": 120, "PROVVISORIO LUNGA DURATA": 120, "PROVVISORIO ORTODONTICO (a elemento)": 120, "PROVVISORIO PRELIMATURA": 60, "PROVVISORIO SU IMPIANTI O ARMATO": 90, "RIFACIMENTO ALL-ON-4 IN COMPOSITO": 60, "AGGIUNTA DENTE-GANCIO": 60, "OVER DENTURE INFERIORE SU 2 IMPIANTI": 60, "PROTESI PARZIALE PROVVISORIA": 105, "PROTESI SCHELETRATA": 105, "PROTESI TOTALE": 135, "PROTESI TOTALE PROVVISORIA": 135, "RIBASATURA": 60, "RIPARAZIONE PROTESI": 60, "SALDATURA LASER": 60, "IGIENE": 45, "IGIENE A.": 30, "IGIENE BV": 45, "IGIENE PEDODONTICA": 30, "IGIENE POST DEBONDING": 45, "IGIENE SENIOR": 30, "IGIENE X 2": 75, "SBIANCAMENTO PROFESSIONALE": 75, "ALLINEATORI COMPREHENSIVE": 225, "ALLINEATORI COMPREHENSIVE POST FIRST": 225, "ALLINEATORI EXPRESS": 180, "ALLINEATORI FIRST": 180, "ALLINEATORI LIGHT": 180, "APPARECCHIO FISSO CERAMICA": 290, "APPARECCHIO FISSO": 465, "APPARECCHIO FISSO ATT.CERAMICA": 285, "APPARECCHIO FISSO ATT.METALLICI 1": 285, "APPARECCHIO FISSO METALLICO 2": 290, "ATTIVATORE/ APPARECCHIO REMOVIBILE": 210, "CLINCHECK": 45, "CONTENZIONE ALLINEATORI": 45, "CONTENZIONE CON 2 APP. X 6 MESI + RETINER": 45, "DEBONDING ALLINEATORI": 60, "ESPANSORE (Cura di 5 mesi)": 120, "MASCHERA DI DELAIRE": 135, "NIGHT GUARD": 60, "PLACCA ORTODONTICA": 90, "PLACCA PER PATOLOGIA ATM (terapia 5 mesi)": 135, "RETINER POST-TRATTAMENTO ORTD.PER ARCATA": 30, "APPARECCHIO MINIVITI PALATALI": 180, "FIX ALL-ON IMPLANT": 90, "FIX OVER DENTURE": 60, "FIXTURE": 60, "IMPIANTO ORTODONTICO": 60};
+
+const PROCEDURE = Object.keys(PROCEDURE_DURATE).sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+
+const sel = document.getElementById('prestazione');
+PROCEDURE.forEach(p => {
+  const opt = document.createElement('option');
+  opt.value = p;
+  opt.textContent = p;
+  sel.appendChild(opt);
+});
+
+const durataInput = document.getElementById('durata');
+function fillDurata() {
+  const d = PROCEDURE_DURATE[sel.value];
+  durataInput.value = d || '';
+}
+sel.addEventListener('change', fillDurata);
+fillDurata();
+
+const btn = document.getElementById('calcBtn');
+const statusEl = document.getElementById('status');
+const resultEl = document.getElementById('result');
+const metricsEl = document.getElementById('metrics');
+const materialsListEl = document.getElementById('materialsList');
+const disclaimerEl = document.getElementById('disclaimerText');
+
+function fmtEur(n) {
+  return isFinite(n) ? ('€ ' + Number(n).toFixed(2)) : '—';
+}
+
+function renderResult(data) {
+  metricsEl.innerHTML = '';
+
+  const boxMateriali = document.createElement('div');
+  boxMateriali.className = 'metric-box highlight';
+  boxMateriali.innerHTML = `<div class="metric-label">Costo materiali stimato</div>
+    <div class="metric-value">${fmtEur(data.suggested_eur)}</div>
+    <div class="metric-sub">Range: ${fmtEur(data.min_eur)} – ${fmtEur(data.max_eur)}</div>`;
+  metricsEl.appendChild(boxMateriali);
+
+  if (!data.approssimato && data.margine != null) {
+    const boxMargine = document.createElement('div');
+    boxMargine.className = 'metric-box';
+    boxMargine.innerHTML = `<div class="metric-label">Margine di contribuzione</div>
+      <div class="metric-value">${fmtEur(data.margine)}</div>
+      <div class="metric-sub">${(data.marginePct * 100).toFixed(1)}% sull'onorario</div>`;
+    metricsEl.appendChild(boxMargine);
+  }
+
+  materialsListEl.innerHTML = '';
+  (data.materials || []).forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = m;
+    materialsListEl.appendChild(li);
+  });
+
+  if (data.approssimato) {
+    disclaimerEl.className = 'disclaimer warn';
+    disclaimerEl.textContent = "Margine non calcolato: per farlo servono costo orario e onorario. Il costo materiali qui sopra è comunque una stima AI indicativa, non un dato di mercato verificato.";
+  } else {
+    disclaimerEl.className = 'disclaimer';
+    disclaimerEl.textContent = "Stima indicativa generata da AI sul costo materiali, combinata con i dati che hai inserito. Non sostituisce un'analisi sui tuoi costi reali.";
+  }
+
+  resultEl.classList.add('show');
+}
+
+btn.addEventListener('click', async () => {
+  const prestazione = sel.value;
+  const durata = durataInput.value;
+  const costoOrario = document.getElementById('costoOrario').value;
+  const onorario = document.getElementById('onorario').value;
+  const note = document.getElementById('note').value.trim();
+
+  btn.disabled = true;
+  resultEl.classList.remove('show');
+  const oldErr = document.querySelector('.error-box');
+  if (oldErr) oldErr.remove();
+  statusEl.textContent = "Sto calcolando...";
+
+  try {
+    const resp = await fetch('/.netlify/functions/marginalita', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ prestazione, note, durata, costoOrario, onorario })
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data.error || 'Errore sconosciuto');
+    }
+
+    statusEl.textContent = "";
+    renderResult(data);
+  } catch (e) {
+    statusEl.textContent = "";
+    const box = document.createElement('div');
+    box.className = 'error-box';
+    box.textContent = "Non è stato possibile calcolare la stima. Riprova tra poco.";
+    resultEl.parentNode.insertBefore(box, resultEl.nextSibling);
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
